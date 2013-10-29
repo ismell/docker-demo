@@ -1,0 +1,27 @@
+#!/bin/sh -e
+
+if [ -z "${1}" ]; then
+    CIRCUS_VERSION="${1}"
+fi
+
+apt-get install -y libzmq-dev libevent-dev python-dev python-virtualenv
+
+apt-get clean
+
+virtualenv /opt/circus
+
+cd /opt/circus
+
+if [ -z "${CIRCUS_VERSION}" ]; then
+    bin/pip install "circus"
+else
+    bin/pip install "circus==${CIRCUS_VERSION}"
+fi
+
+ln -s /opt/circus/bin/circusd /usr/bin/circusd
+
+mkdir /var/run/circus /var/log/circus
+
+useradd -r -U circus
+
+chown circus:circus /var/run/circus /var/log/circus

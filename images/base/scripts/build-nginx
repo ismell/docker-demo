@@ -1,0 +1,39 @@
+#!/bin/sh -e
+
+if [ -z "${1}" ]; then
+        echo "Usage: $0 <version>"
+        exit 1
+fi
+
+apt-get install -y build-essential libpcre3-dev libssl-dev
+
+apt-get clean
+
+NGINX_VERSION="${1}"
+
+\curl -L "http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" | tar -zxvf - -C /tmp
+
+cd "/tmp/nginx-${NGINX_VERSION}"
+
+useradd -r -U nginx
+
+./configure --prefix=/var/lib/nginx \
+            --user=nginx \
+            --group=nginx \
+            --sbin-path=/usr/sbin \
+            --conf-path=/etc/nginx/nginx.conf \
+            --pid-path=/var/run/nginx/nginx.pid \
+            --error-log-path=/var/log/nginx/error.log \
+            --http-log-path=/var/log/nginx/access.log \
+            --without-http-cache \
+            --with-debug
+
+make
+
+make install
+
+chown nginx:nginx /var/run/nginx /var/log/nginx /var/lib/nginx
+
+cd "/"
+
+rm -rf "/tmp/nginx-${NGINX_VERSION}"

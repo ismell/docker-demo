@@ -1,0 +1,23 @@
+#!/bin/sh -e
+
+if [ -z "${1}" ]; then
+        echo "Usage: $0 <app.tgz>"
+        exit 1
+fi
+
+APP_DIR="/app"
+
+mkdir -p "${APP_DIR}"
+
+useradd -d /app --system --shell /bin/false --user-group app
+
+tar --no-same-owner --strip-components=1 -zxvf "${1}" -C "${APP_DIR}"
+
+cd "${APP_DIR}"
+
+# Install the gems into the system
+bundle install --local --no-cache
+
+mkdir -p "/var/run/app" "/var/log/app"
+
+chown app:app "/var/run/app" "/var/log/app"

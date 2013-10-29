@@ -1,0 +1,27 @@
+#!/bin/sh -e
+
+if [ -z "${1}" ]; then
+    SUPERVISOR_VERSION="${1}"
+fi
+
+apt-get install -y python-dev python-virtualenv
+
+apt-get clean
+
+virtualenv /opt/supervisor
+
+cd /opt/supervisor
+
+if [ -z "${SUPERVISOR_VERSION}" ]; then
+    bin/pip install "supervisor"
+else
+    bin/pip install "supervisor==${SUPERVISOR_VERSION}"
+fi
+
+ln -s /opt/supervisor/bin/supervisord /usr/bin/supervisord
+
+mkdir /var/run/supervisor /var/log/supervisor
+
+useradd -r -U supervisor
+
+chown supervisor:supervisor /var/run/supervisor /var/log/supervisor

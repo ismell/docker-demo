@@ -1,0 +1,19 @@
+#!/bin/sh -e
+
+if [ -z "${1}" ]; then
+    RUBY_BUILD_VERSION="master"
+else
+    RUBY_BUILD_VERSION="${1}"
+fi
+
+# Download the ruby-build code
+\curl -L "https://github.com/sstephenson/ruby-build/archive/${RUBY_BUILD_VERSION}.tar.gz" | tar -zxvf - -C /tmp/
+
+# Install ruby-build
+cd /tmp/ruby-build-*
+
+./install.sh
+
+cd /
+
+rm -rf /tmp/ruby-build-*

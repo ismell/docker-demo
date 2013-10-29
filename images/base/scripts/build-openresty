@@ -1,0 +1,39 @@
+#!/bin/sh -e
+
+if [ -z "${1}" ]; then
+        echo "Usage: $0 <version>"
+        exit 1
+fi
+
+apt-get -y install libreadline-dev libncurses5-dev libpcre3-dev libssl-dev perl make
+
+apt-get clean
+
+OPENRESTY_VERSION="${1}"
+
+\curl -L "http://openresty.org/download/ngx_openresty-${OPENRESTY_VERSION}.tar.gz" | tar -zxvf - -C /tmp
+
+cd "/tmp/ngx_openresty-${OPENRESTY_VERSION}"
+
+useradd -r -U nginx
+
+./configure --prefix=/var/lib/nginx \
+            --user=nginx \
+            --group=nginx \
+            --sbin-path=/usr/sbin \
+            --conf-path=/etc/nginx/nginx.conf \
+            --pid-path=/var/run/nginx/nginx.pid \
+            --error-log-path=/var/log/nginx/error.log \
+            --http-log-path=/var/log/nginx/access.log \
+            --with-luajit \
+            --with-debug
+
+make
+
+make install
+
+chown nginx:nginx /var/run/nginx /var/log/nginx /var/lib/nginx
+
+cd "/"
+
+rm -rf "/tmp/ngx_openresty-${OPENRESTY_VERSION}"

@@ -1,0 +1,27 @@
+#!/bin/bash -e
+
+if [ -z "${1}" ]; then
+        echo "Usage: $0 <version>"
+        exit 1
+fi
+
+RUBY_VERSION="${1}"
+
+if [[ $RUBY_VERSION =~ ^jruby ]]; then
+    # Install Java deps
+    apt-get install -y curl g++ openjdk-6-jre-headless
+else
+    apt-get install -y build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion pkg-config
+fi
+
+# Install Ruby Build
+build-ruby-build
+
+# Install Ruby
+ruby-build "${RUBY_VERSION}" /usr
+
+# Install gems
+gem install bundler rubygems-bundler --no-rdoc --no-ri
+
+# Regenerate binstubs
+gem regenerate_binstubs
