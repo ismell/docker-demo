@@ -1,0 +1,2 @@
+web: unicorn -p 9292 -c /app/config/unicorn.rb
+proxy: nginx -c /app/config/nginx.conf
