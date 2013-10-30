@@ -11,4 +11,4 @@ RUN bundle install --local --no-cache
 
 EXPOSE 9292
 
-CMD ["unicorn", "-p", "9292"]
+CMD ["unicorn", "-p", "9292", "-c", "config/unicorn.rb"]
