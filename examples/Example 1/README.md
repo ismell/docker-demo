@@ -3,3 +3,6 @@
 
 
     docker ps -a
+
+    
+    echo Hello World | docker run -i ubuntu tr -d l
